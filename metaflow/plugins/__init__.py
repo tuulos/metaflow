@@ -26,9 +26,9 @@ from .aws.batch.batch_decorator import BatchDecorator, ResourcesDecorator
 from .conda.conda_step_decorator import CondaStepDecorator
 
 try:
-    from metaflow_custom.plugins import STEP_DECORATORS,
-                                        ENVIRONMENTS,
-                                        FLOW_DECORATORS,
+    from metaflow_custom.plugins import STEP_DECORATORS,\
+                                        ENVIRONMENTS,\
+                                        FLOW_DECORATORS,\
                                         SIDECAR
 except ImportError:
     STEP_DECORATORS = []
