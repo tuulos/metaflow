@@ -9,8 +9,6 @@ class CacheServerInitFailed(Exception):
 
 def import_action_class_spec(action_spec):
     parts = action_spec.split('.')
-    package = '.'.join(action_spec.split('.')[:-1])
-    action_name = action_spec.split('.')[-1]
     return import_action_class('.'.join(parts[:-1]), parts[-1])
 
 def import_action_class(mod, cls):

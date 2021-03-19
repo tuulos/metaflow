@@ -79,7 +79,7 @@ class CacheStore(object):
 
     def _init_gc(self, root):
         objects = []
-        for dirr, dirs, files in os.walk(root):
+        for dirr, _, files in os.walk(root):
             for fname in files:
                 path = os.path.join(dirr, fname)
                 if os.path.islink(path):
@@ -122,7 +122,6 @@ class CacheStore(object):
 
         # 1) delete marked objects that are past their quarantine period
         limit = time.time() - quarantine
-        deleted = []
         for path in list(self.gc_queue):
             tstamp, size = self.gc_queue[path]
             if tstamp < limit:
@@ -186,7 +185,7 @@ class CacheStore(object):
                         f.close()
                         try:
                             os.symlink(dst, src)
-                        except Exception as ex:
+                        except OSError as ex:
                             # two actions may be streaming the same object
                             # simultaneously. We don't consider an existing
                             # symlink (errno 17) to be an error.

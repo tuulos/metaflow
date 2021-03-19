@@ -2,7 +2,7 @@ import time
 import asyncio
 from subprocess import PIPE
 
-from .cache_client import CacheClient, CacheServerUnreachable
+from .cache_client import CacheClient, CacheServerUnreachable, CacheClientTimeout
 
 WAIT_FREQUENCY = 0.2
 HEARTBEAT_FREQUENCY = 1
@@ -16,7 +16,7 @@ class CacheAsyncClient(CacheClient):
         asyncio.create_task(self._heartbeat())
 
     async def check(self):
-        ret = await self.Check()
+        ret = await self.Check()  # pylint: disable=no-member
         await ret.wait()
         ret.get()
 
