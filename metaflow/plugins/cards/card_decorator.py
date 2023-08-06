@@ -236,12 +236,18 @@ class CardDecorator(StepDecorator):
 
     def _run_cards_subprocess(self, mode, runspec, component_strings, data=None):
         components_file = data_file = None
+        wait = mode == "render"
+
         if len(component_strings) > 0:
-            components_file = tempfile.NamedTemporaryFile("w", suffix=".json")
+            # note that we can't delete temporary files here when calling the subprocess
+            # async due to a race condition. The subprocess must delete them
+            components_file = tempfile.NamedTemporaryFile(
+                "w", suffix=".json", delete=False
+            )
             json.dump(component_strings, components_file)
             compotents_file.seek(0)
         if data is not None:
-            data_file = tempfile.NamedTemporaryFile("w", suffix=".json")
+            data_file = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False)
             json.dump(data, data_file)
             data_file.seek(0)
 
@@ -254,6 +260,7 @@ class CardDecorator(StepDecorator):
             "card",
             "create",
             runspec,
+            "--delete-input-files",
             "--card-uuid",
             self._card_uuid,
             "--mode",
@@ -282,7 +289,6 @@ class CardDecorator(StepDecorator):
         if data_file is not None:
             cmd += ["--data-file", data_file.name]
 
-        wait = mode == "render"
         response, fail = self._run_command(
             cmd, os.environ, timeout=self.attributes["timeout"], wait=wait
         )
@@ -323,7 +329,7 @@ class CardDecorator(StepDecorator):
                     # and timeout hasn't been reached
                     return "", False
             else:
-                # print("CARD CMD", ' '.join(cmd))
+                #print("CARD CMD", " ".join(cmd))
                 self._async_proc = subprocess.Popen(
                     cmd, env=env, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL
                 )

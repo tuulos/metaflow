@@ -72,11 +72,11 @@ class MetaflowCard(object):
 
     # FIXME document
     def render_runtime(self, task, data):
-        return None
+        return
 
     # FIXME document
     def refresh(self, task, data):
-        return None
+        return
 
 
 class MetaflowCardComponent(object):

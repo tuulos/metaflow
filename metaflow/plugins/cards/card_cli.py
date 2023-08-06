@@ -457,6 +457,13 @@ def update_card(mf_card, mode, task, data, timeout_value=None):
     type=str,
     help="Card UUID. (internal)",
 )
+@click.option(
+    "--delete-input-files",
+    default=False,
+    is_flag=True,
+    show_default=True,
+    help="Delete data-file and compontent-file after reading. (internal)",
+)
 @click.pass_context
 def create(
     ctx,
@@ -469,6 +476,7 @@ def create(
     data_file=None,
     render_error_card=False,
     card_uuid=None,
+    delete_input_files=None,
     id=None,
 ):
     card_id = id
@@ -492,12 +500,18 @@ def create(
     if component_file is not None:
         with open(component_file, "r") as f:
             component_arr = json.load(f)
+        # data is passed in as temporary files which can be deleted after use
+        if delete_input_files:
+            os.remove(component_file)
 
     # Load data to be refreshed for runtime cards
     data = {}
     if data_file is not None:
         with open(data_file, "r") as f:
             data = json.load(f)
+        # data is passed in as temporary files which can be deleted after use
+        if delete_input_files:
+            os.remove(data_file)
 
     task = Task(full_pathspec)
     from metaflow.plugins import CARDS
